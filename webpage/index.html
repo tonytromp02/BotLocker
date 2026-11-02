@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>BotLocker · Make abusive scraping pointless</title>
+  <meta name="description" content="BotLocker is a reverse proxy that lures abusive scrapers into an endless maze, so they waste their own time instead of taking your content.">
+  <meta name="color-scheme" content="dark">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav" id="top">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top" aria-label="BotLocker home">
+      <span class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="11" width="14" height="10" rx="3"/>
+          <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+        </svg>
+      </span>
+      <span>BotLocker</span>
+    </a>
+    <button class="menu-toggle" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <nav class="nav-links" id="nav-links" aria-label="Main">
+      <a href="#manifest">Manifest</a>
+      <a href="#how">How it works</a>
+      <a href="#signals">Signals</a>
+      <a href="#preview">Dashboard</a>
+      <a href="#deploy">Deploy</a>
+      <a href="#limits">Limits</a>
+      <a class="pill-link" href="#deploy">Quick start</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="glow glow-a" aria-hidden="true"></div>
+    <div class="glow glow-b" aria-hidden="true"></div>
+    <div class="wrap hero-grid">
+      <div class="reveal">
+        <p class="eyebrow"><span class="dot" aria-hidden="true"></span> Open-source scraper defence</p>
+        <h1>Make abusive scraping <span class="grad">pointless.</span></h1>
+        <p class="lead">
+          BotLocker is a reverse proxy that spots scrapers and lures them into an endless maze of
+          generated pages. They burn their own time and bandwidth, while your real content and your
+          real visitors are never touched.
+        </p>
+        <div class="cta">
+          <a class="btn btn-primary" href="#deploy">Quick start</a>
+          <a class="btn btn-ghost" href="#how">See how it works</a>
+        </div>
+        <ul class="hero-facts" aria-label="Highlights">
+          <li><strong>Zero harm</strong> to humans</li>
+          <li><strong>Honours</strong> robots.txt</li>
+          <li><strong>Runs anywhere</strong>: binary or nginx</li>
+        </ul>
+      </div>
+      <div class="hero-visual reveal" aria-hidden="true">
+        <div class="maze-card">
+          <div class="maze-row"><span class="pill proxied">proxied</span><span class="mono">GET /articles/42</span></div>
+          <div class="maze-row"><span class="pill challenged">challenged</span><span class="mono">python-requests/2.31</span></div>
+          <div class="maze-row"><span class="pill trapped">trapped</span><span class="mono">GET /maze/a7f3c1</span></div>
+          <svg class="maze-net" viewBox="0 0 480 210" role="img" aria-label="Visitors flow through BotLocker: passing visitors reach your site, challenged clients are checked, and scrapers are led into the maze">
+            <defs>
+              <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" class="grid-dot"/></pattern>
+              <radialGradient id="mazeGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#d946ef" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#d946ef" stop-opacity="0"/>
+              </radialGradient>
+              <path id="pVisitor" d="M60 105 C 120 105, 150 50, 214 50"/>
+              <path id="pChallenge" d="M60 105 C 120 105, 150 105, 214 105"/>
+              <path id="pScraper" d="M60 105 C 120 105, 150 160, 214 160"/>
+              <path id="pMaze1" d="M214 160 C 250 160, 280 118, 330 112"/>
+              <path id="pMaze2" d="M330 112 C 360 100, 380 74, 410 66"/>
+            </defs>
+            <rect width="480" height="210" fill="url(#dots)"/>
+            <circle cx="350" cy="110" r="110" fill="url(#mazeGlow)"/>
+
+            <!-- links -->
+            <use href="#pVisitor" class="edge e-proxy"/>
+            <use href="#pChallenge" class="edge e-challenge"/>
+            <use href="#pScraper" class="edge e-trap"/>
+            <use href="#pMaze1" class="edge e-trap"/>
+            <use href="#pMaze2" class="edge e-maze"/>
+            <path d="M330 112 L 372 150 L 420 132 L 410 66 Z" class="edge e-maze" style="animation-delay:-1s"/>
+            <path d="M372 150 L 396 194" class="edge e-maze" style="animation-delay:-2s"/>
+
+            <!-- maze cluster -->
+            <g class="maze-nodes">
+              <circle cx="330" cy="112" r="6" class="mz"/>
+              <circle cx="410" cy="66" r="5" class="mz"/>
+              <circle cx="372" cy="150" r="5" class="mz"/>
+              <circle cx="420" cy="132" r="6" class="mz"/>
+              <circle cx="396" cy="194" r="4" class="mz"/>
+            </g>
+            <text x="392" y="34" class="label">maze</text>
+
+            <!-- your site -->
+            <circle cx="60" cy="105" r="16" class="n-origin"/>
+            <circle cx="60" cy="105" r="16" class="ring ring-origin"/>
+            <text x="60" y="140" class="label">your site</text>
+
+            <!-- visitor classes -->
+            <circle cx="214" cy="50" r="9" class="n-pass"/>
+            <text x="214" y="30" class="label">visitor</text>
+            <circle cx="214" cy="105" r="9" class="n-challenge"/>
+            <text x="214" y="86" class="label">challenged</text>
+            <circle cx="214" cy="160" r="10" class="n-captured"/>
+            <circle cx="214" cy="160" r="10" class="ring ring-captured"/>
+            <text x="214" y="190" class="label">scraper</text>
+
+            <!-- packets: travel along the paths -->
+            <circle r="3.2" class="packet p-pass"><animateMotion dur="2.6s" repeatCount="indefinite"><mpath href="#pVisitor"/></animateMotion></circle>
+            <circle r="3.2" class="packet p-pass"><animateMotion dur="2.6s" begin="1.3s" repeatCount="indefinite"><mpath href="#pVisitor"/></animateMotion></circle>
+            <circle r="3" class="packet p-challenge"><animateMotion dur="3.4s" begin="0.6s" repeatCount="indefinite"><mpath href="#pChallenge"/></animateMotion></circle>
+            <circle r="3.4" class="packet p-trap"><animateMotion dur="2.2s" repeatCount="indefinite"><mpath href="#pScraper"/></animateMotion></circle>
+            <circle r="3" class="packet p-trap"><animateMotion dur="1.8s" begin="0.9s" repeatCount="indefinite"><mpath href="#pMaze1"/></animateMotion></circle>
+            <circle r="2.6" class="packet p-maze"><animateMotion dur="2s" begin="0.4s" repeatCount="indefinite"><mpath href="#pMaze2"/></animateMotion></circle>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MANIFEST -->
+  <section class="section" id="manifest">
+    <div class="wrap">
+      <header class="section-head reveal">
+        <p class="eyebrow">Manifest</p>
+        <h2>Why BotLocker exists</h2>
+        <p class="lead">
+          Bots take what we publish without consent, without credit, and without compensation. They burn
+          bandwidth, inflate costs, and degrade the experience for the people we build for. We are tired of
+          it, so BotLocker makes abusive scraping expensive and pointless.
+        </p>
+      </header>
+
+      <div class="cards three">
+        <article class="card reveal">
+          <h3>Mission</h3>
+          <p>Make abusive scraping costly and pointless, and protect the content creators have made.</p>
+        </article>
+        <article class="card reveal">
+          <h3>Goals</h3>
+          <ul>
+            <li>Protect real users, who never see a trap</li>
+            <li>Protect good bots such as search engines</li>
+            <li>Impose cost on the bots that ignore the rules</li>
+            <li>Stay simple to deploy, at the edge or locally</li>
+            <li>Stay open and transparent</li>
+          </ul>
+        </article>
+        <article class="card reveal">
+          <h3>Principles</h3>
+          <ul>
+            <li>Trap only on clear signals, never on a hunch</li>
+            <li>Serve only harmless, generated filler</li>
+            <li>Allowlist verified crawlers first</li>
+            <li>Keep a kill switch and hard caps</li>
+          </ul>
+        </article>
+      </div>
+
+      <h3 class="sub reveal">Values</h3>
+      <div class="cards values">
+        <article class="value reveal"><span class="value-num">01</span><h4>Consent over extraction</h4><p>Our content is ours to offer, not to take.</p></article>
+        <article class="value reveal"><span class="value-num">02</span><h4>Defense, not offense</h4><p>We only waste the time of bots that ignore our rules. We never attack third parties.</p></article>
+        <article class="value reveal"><span class="value-num">03</span><h4>Zero harm to humans</h4><p>A misclassified visitor always has a way out, and is never served anything harmful.</p></article>
+        <article class="value reveal"><span class="value-num">04</span><h4>Simplicity</h4><p>Small, understandable parts beat clever ones.</p></article>
+        <article class="value reveal"><span class="value-num">05</span><h4>Transparency</h4><p>We honour robots.txt and document what we do, in plain words.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" id="how">
+    <div class="wrap">
+      <header class="section-head reveal">
+        <p class="eyebrow">How it works</p>
+        <h2>Every request takes the same path</h2>
+        <p class="lead">BotLocker sits in front of your site. Each request is classified before it reaches your origin.</p>
+      </header>
+
+      <ol class="pipeline reveal" aria-label="Request pipeline">
+        <li class="stage"><span class="stage-num">1</span><h4>Verified crawler?</h4><p>Search engines and other allowlisted good bots pass straight through.</p></li>
+        <li class="stage"><span class="stage-num">2</span><h4>Honeypot?</h4><p>A request under the maze path is always trapped. No human reaches it.</p></li>
+        <li class="stage"><span class="stage-num">3</span><h4>Score</h4><p>Weak signals add up: headers, user agent, behaviour, network, and more.</p></li>
+        <li class="stage"><span class="stage-num">4</span><h4>Decide</h4><p>Low scores pass. Mid scores get a challenge. High scores from two or more signal families go to the maze.</p></li>
+      </ol>
+
+      <div class="split">
+        <article class="panel reveal">
+          <h3>The maze</h3>
+          <p>
+            Each maze page is generated from a keyed hash of its path, so the same path always gives the same
+            page and nothing has to be stored. Every page is filler text with links deeper into the maze, so it
+            never ends. Maze pages are marked <code>noindex</code>, and <code>robots.txt</code> disallows the path
+            so compliant crawlers never enter it.
+          </p>
+        </article>
+        <article class="panel reveal">
+          <h3>The challenge</h3>
+          <ol class="steps">
+            <li>The browser gets a short challenge page, not your site.</li>
+            <li>The page reports browser signals with a short-lived token.</li>
+            <li>Clean browsers get a signed pass cookie, bound to their IP.</li>
+            <li>Automation signals trap the client for the same period, even with a cookie.</li>
+          </ol>
+          <p class="muted">Clients that don't run the page never get a pass.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- SIGNALS -->
+  <section class="section" id="signals">
+    <div class="wrap">
+      <header class="section-head reveal">
+        <p class="eyebrow">Detection</p>
+        <h2>Many weak signals, one decision</h2>
+        <p class="lead">
+          No single signal is trusted alone. A score crosses a threshold only when several independent signal
+          families agree. That keeps one noisy check from trapping a real person.
+        </p>
+      </header>
+
+      <div class="cards signals">
+        <article class="card signal reveal"><span class="family">Headers</span><h3>Browser headers</h3><p>Missing <code>Accept-Language</code> or <code>Accept</code>, and Chrome user agents without fetch metadata.</p></article>
+        <article class="card signal reveal"><span class="family">Client</span><h3>Known scrapers</h3><p>User agents from common scraping libraries, and empty user agents.</p></article>
+        <article class="card signal reveal"><span class="family">Behaviour</span><h3>Crawl pattern</h3><p>Request rate per window, and many page views with no CSS, JS, or image loads.</p></article>
+        <article class="card signal reveal"><span class="family">Honeypot</span><h3>Hidden link</h3><p>A link no human sees. Any request to the maze path is a trap, with no score needed.</p></article>
+        <article class="card signal reveal"><span class="family">Browser</span><h3>Browser report</h3><p>WebDriver automation, headless Chrome, and zero-size windows, reported from the challenge page.</p></article>
+        <article class="card signal reveal"><span class="family muted-tag">Needs data</span><h3>Network and TLS</h3><p>Hosting ASNs and TLS fingerprints. These need a data source, so they stay silent until you add one.</p></article>
+      </div>
+
+      <div class="rule reveal">
+        <div><strong>The trap rule</strong><p>Score at or above <code>trap_at</code> (default 6.0) from two or more families means the maze. Score at or above <code>challenge_at</code> (default 3.0) means a challenge. Below that, the visitor passes.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD PREVIEW -->
+  <section class="section" id="preview">
+    <div class="wrap">
+      <header class="section-head reveal">
+        <p class="eyebrow">Dashboard</p>
+        <h2>See what the bots are doing</h2>
+        <p class="lead">
+          A local dashboard shows every connection, every captured bot, and why it was captured. It also lets you
+          change settings, and the proxy reloads within seconds.
+        </p>
+      </header>
+
+      <div class="preview reveal" role="img" aria-label="Sample dashboard: stat tiles and a connection graph with one captured bot">
+        <p class="sample-tag">Sample data</p>
+        <div class="stats">
+          <div class="stat" style="--accent:var(--violet)"><span class="label">Requests</span><span class="value">2,418</span></div>
+          <div class="stat" style="--accent:var(--teal)"><span class="label">Proxied</span><span class="value">2,107</span></div>
+          <div class="stat" style="--accent:var(--amber)"><span class="label">Challenged</span><span class="value">164</span></div>
+          <div class="stat" style="--accent:var(--fuchsia)"><span class="label">Trapped</span><span class="value">147</span></div>
+          <div class="stat" style="--accent:var(--purple)"><span class="label">Captured bots</span><span class="value">3</span></div>
+        </div>
+        <div class="graph-wrap">
+          <svg viewBox="0 0 600 260" role="presentation" class="graph">
+            <line class="edge proxy" x1="120" y1="130" x2="300" y2="70"/>
+            <line class="edge proxy" x1="120" y1="130" x2="300" y2="190"/>
+            <line class="edge challenge" x1="120" y1="130" x2="470" y2="60"/>
+            <line class="edge trap" x1="300" y1="70" x2="500" y2="200"/>
+            <line class="edge trap" x1="470" y1="60" x2="500" y2="200"/>
+            <circle class="n origin" cx="120" cy="130" r="26"/><text x="120" y="172">Origin</text>
+            <circle class="n client" cx="300" cy="70" r="11"/><text x="300" y="52">203.0.113.8</text>
+            <circle class="n client" cx="300" cy="190" r="10"/><text x="300" y="222">198.51.100.4</text>
+            <circle class="n captured" cx="470" cy="60" r="14"/><text x="470" y="34">203.0.113.9</text>
+            <circle class="n maze" cx="500" cy="200" r="24"/><text x="500" y="244">Maze</text>
+          </svg>
+          <aside class="why-card">
+            <p class="why-title">Captured because</p>
+            <p>Signal score crossed the trap threshold</p>
+            <ul>
+              <li>score 8.5 (threshold 6.0, 3 signal families)</li>
+              <li>client.bot_ua: User-Agent matches known scraper</li>
+              <li>behavior.rate: 130 requests in 60s window</li>
+            </ul>
+          </aside>
+        </div>
+        <div class="legend">
+          <span><i class="sw" style="background:#e8e8f0"></i>Origin</span>
+          <span><i class="sw" style="background:#5eead4"></i>Passing</span>
+          <span><i class="sw" style="background:#fbbf24"></i>Challenged</span>
+          <span><i class="sw" style="background:#a78bfa;box-shadow:0 0 8px #8b5cf6"></i>Captured</span>
+          <span><i class="sw" style="background:#d946ef"></i>Maze</span>
+        </div>
+      </div>
+
+      <div class="cards three mini">
+        <article class="card reveal"><h3>Captured</h3><p>Every captured client, with the rule that caught it and its evidence.</p></article>
+        <article class="card reveal"><h3>Live feed</h3><p>The most recent decisions, with the action and the reason for each.</p></article>
+        <article class="card reveal"><h3>Settings</h3><p>Edit thresholds and limits. Each save is validated, audited, and applied without a restart.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEPLOY -->
+  <section class="section" id="deploy">
+    <div class="wrap">
+      <header class="section-head reveal">
+        <p class="eyebrow">Deploy</p>
+        <h2>Two ways to run it</h2>
+        <p class="lead">Both run the same Rust detection core, so the rules are identical.</p>
+      </header>
+
+      <div class="cards two">
+        <article class="card deploy reveal">
+          <h3>Standalone binary</h3>
+          <p>A single Rust binary that proxies your site and serves the dashboard on loopback.</p>
+          <div class="code">
+            <button class="copy" type="button" aria-label="Copy command">Copy</button>
+            <pre><code>cd botlocker-core
+cargo build --release -p botlocker
+cp botlocker.example.toml botlocker.toml
+export BOTLOCKER_SECRET="$(openssl rand -hex 32)"
+./target/release/botlocker --config botlocker.toml</code></pre>
+          </div>
+        </article>
+        <article class="card deploy reveal">
+          <h3>nginx with Docker</h3>
+          <p>An nginx build with the module compiled in, started with Compose. The dashboard is optional.</p>
+          <div class="code">
+            <button class="copy" type="button" aria-label="Copy command">Copy</button>
+            <pre><code>cd nginx
+cp .env.example .env          # set SERVER_NAME and HOST_PORT; ORIGIN_URL is in docker-compose-nginx.yaml
+mkdir -p secrets && openssl rand -hex 32 &gt; secrets/botlocker_secret
+docker compose -f docker-compose-nginx.yaml up -d --build</code></pre>
+          </div>
+        </article>
+      </div>
+
+      <p class="note reveal">Put your <code>robots.txt</code> in <code>nginx/robots/</code> to serve it, and keep the <code>Disallow: /maze/</code> line.</p>
+    </div>
+  </section>
+
+  <!-- LIMITS -->
+  <section class="section" id="limits">
+    <div class="wrap">
+      <header class="section-head reveal">
+        <p class="eyebrow">Honest limits</p>
+        <h2>What BotLocker can't do</h2>
+        <p class="lead">BotLocker raises the cost of scraping. It does not promise perfect detection.</p>
+      </header>
+      <div class="cards two limits">
+        <article class="card reveal"><h3>Stealth browsers</h3><p>A browser that hides automation, or a headless one with realistic fingerprints, can pass the browser report.</p></article>
+        <article class="card reveal"><h3>Forged reports</h3><p>The challenge report comes from the browser, so a client can send one without running the page. It raises the cost but doesn't prove a real browser.</p></article>
+        <article class="card reveal"><h3>Shared IPs</h3><p>Visitors behind one NAT or CDN share a rate limit and a pass. Real client IP handling behind a load balancer is not built yet.</p></article>
+        <article class="card reveal"><h3>Some signals need data</h3><p>ASN and TLS fingerprint signals need a data source. The nginx build has no ASN or fingerprint data.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER CTA -->
+  <section class="closing">
+    <div class="wrap reveal">
+      <h2>Built for people who publish.</h2>
+      <p class="lead">Your content is yours to offer. BotLocker makes taking it without asking a bad deal.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="#deploy">Get started</a>
+        <a class="btn btn-ghost" href="../README.md">Read the docs</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <span>BotLocker · License to be decided</span>
+    <span class="muted">Docs in the repo: README, manifest.md, product.md, architecture.md</span>
+    <a href="#top">Back to top</a>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

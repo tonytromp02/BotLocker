@@ -1,0 +1,8 @@
+# Keep the build context small. The image builds everything it needs itself.
+target/
+botlocker-core/target/
+.git/
+**/.build/
+**/secrets/
+nginx/docker-compose-nginx.yaml
+*.log

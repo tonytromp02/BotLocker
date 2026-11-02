@@ -1,0 +1,24 @@
+# Serves the BotLocker project page (static files) with nginx.
+#
+#   docker compose up -d --build     # then open http://localhost:8090
+#   WEBPAGE_PORT=8080 docker compose up -d   # use another host port
+name: botlocker-webpage
+
+services:
+  webpage:
+    build: .
+    image: botlocker-webpage:latest
+    restart: unless-stopped
+    ports:
+      - "${WEBPAGE_PORT:-8090}:80"
+    # The static site needs no writes outside these tmpfs mounts.
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/cache/nginx
+      - /var/run
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:80/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3

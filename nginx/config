@@ -1,0 +1,18 @@
+ngx_addon_name=ngx_http_botlocker_module
+
+HTTP_MODULES="$HTTP_MODULES ngx_http_botlocker_module"
+
+NGX_ADDON_SRCS="$NGX_ADDON_SRCS $ngx_addon_dir/ngx_http_botlocker_module.c"
+
+# The Rust core (in botlocker-core/), built with: cd botlocker-core && cargo build --release -p botlocker-ffi
+BOTLOCKER_FFI_DIR="$ngx_addon_dir/../botlocker-core/crates/ffi"
+BOTLOCKER_LIB="$BOTLOCKER_FFI_DIR/../../target/release/libbotlocker_ffi.a"
+
+if [ ! -f "$BOTLOCKER_LIB" ]; then
+    echo "$0: error: $BOTLOCKER_LIB not found; run 'cd botlocker-core && cargo build --release -p botlocker-ffi' first" >&2
+    exit 1
+fi
+
+CFLAGS="$CFLAGS -I$BOTLOCKER_FFI_DIR/include"
+NGX_ADDON_DEPS="$NGX_ADDON_DEPS $BOTLOCKER_FFI_DIR/include/botlocker.h"
+CORE_LIBS="$CORE_LIBS $BOTLOCKER_LIB -lpthread -ldl -lm"

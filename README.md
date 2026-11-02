@@ -1,8 +1,22 @@
-# Botlocker
+# BotLocker
 
-Botlocker is a reverse proxy that lures abusive scrapers into an endless maze of generated pages, so they waste their own time instead of taking your content. Humans and verified good crawlers pass through untouched.
+BotLocker is a reverse proxy that lures abusive scrapers into an endless maze of generated pages, so they waste their own time instead of taking your content. Humans and verified good crawlers pass through untouched.
 
 > **Status:** The native (self-hosted) proxy and detector work and are tested. The Cloudflare Worker adapter is designed but not built yet. See [`architecture.md`](architecture.md).
+
+## Screenshots
+
+The project page, served from `webpage/`:
+
+![Project page](docs/images/project-page.png)
+
+The dashboard. The connections graph shows each client, joined to the origin (proxied), the challenge page, or the maze (trapped). Clients appear by IP address:
+
+![Dashboard connections graph](docs/images/dashboard-graph.png)
+
+The Settings tab edits the config file. Saves are checked, and the audit list records each change:
+
+![Dashboard settings](docs/images/dashboard-settings.png)
 
 ## How it works
 

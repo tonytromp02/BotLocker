@@ -1,0 +1,44 @@
+# Copy to botlocker.toml and adjust. The dashboard's Settings page can edit the file
+# once it is running. The proxy reloads when the file changes. Run with:
+#   (from botlocker-core/)  BOTLOCKER_SECRET=$(openssl rand -hex 32) cargo run -p botlocker -- --config botlocker.toml
+
+# Standalone binary only. The nginx build takes its origin from ORIGIN_URL in nginx/docker-compose-nginx.yaml.
+origin = "http://127.0.0.1:9000"
+maze_prefix = "/maze/"
+
+# Scores: below challenge_at proxies; at or above challenge_at shows a
+# challenge; at or above trap_at (from 2+ signal families) traps.
+challenge_at = 3.0
+trap_at = 6.0
+
+kill_switch = false
+inject_honeypot = true
+
+# Milliseconds between trap-page chunks. 0 disables slow drip.
+slow_drip_ms = 0
+max_trap_bytes = 65536
+pass_ttl_secs = 3600
+# Seconds between checks for hand edits to this file (5-300, +/-20% jitter).
+# Saves from the dashboard Settings page apply at once, whatever this is.
+reload_poll_secs = 15
+
+[behavior]
+window_secs = 60
+max_requests = 120
+min_html_for_asset_check = 5
+
+# Optional per-signal weight overrides.
+# [weights]
+# "client.bot_ua" = 4.0
+
+# Lowercase substrings. Defaults cover common scraping libraries.
+# bad_user_agents = ["curl/", "python-requests"]
+
+# Hosting/datacenter ASNs. Needs an ASN source, which native doesn't have yet.
+# hosting_asns = [16509, 14061]
+
+# Good crawlers bypass scoring. Both UA and IP must match.
+# [[verified_crawlers]]
+# name = "googlebot"
+# user_agent_contains = "Googlebot"
+# ip_ranges = ["66.249.64.0/19"]

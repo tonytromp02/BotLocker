@@ -1,0 +1,28 @@
+# The Botlocker dashboard on its own: the UI and API, served by the botlocker binary.
+# For live proxy data, run the nginx stack in ../nginx instead.
+#
+#   cp .env.example .env                  # set BOTLOCKER_ADMIN_APIKEY
+#   docker compose up -d --build           # dashboard at http://127.0.0.1:9090
+name: botlocker-backend
+
+services:
+  backend:
+    build: .
+    image: botlocker-backend:latest
+    restart: unless-stopped
+    environment:
+      # Required. The server adds this key when it forwards dashboard requests to the API. The browser never sees it.
+      BOTLOCKER_ADMIN_APIKEY: ${BOTLOCKER_ADMIN_APIKEY:?set BOTLOCKER_ADMIN_APIKEY in .env}
+    command:
+      - "--dashboard-only"
+      - "--config"
+      - "/etc/botlocker/settings/botlocker.toml"
+      - "--admin"
+      - "0.0.0.0:9090"
+      - "--allow-remote-admin"
+    ports:
+      # Loopback only. The dashboard is for this machine.
+      - "127.0.0.1:${BACKEND_PORT:-9090}:9090"
+    volumes:
+      # The config the Settings page edits. Put botlocker.toml here.
+      - ./settings:/etc/botlocker/settings

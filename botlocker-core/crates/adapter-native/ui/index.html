@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Botlocker · Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="11" width="14" height="10" rx="3"/>
+          <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+        </svg>
+      </div>
+      <div>Botlocker <small>dashboard</small></div>
+    </div>
+    <div class="status"><span class="dot" id="dot"></span><span id="status-text">connecting…</span></div>
+  </header>
+
+  <section class="stats" aria-label="Summary">
+    <div class="stat" style="--accent: var(--violet)"><div class="label">Requests</div><div class="value" id="s-requests">–</div></div>
+    <div class="stat" style="--accent: var(--teal)"><div class="label">Proxied</div><div class="value" id="s-proxied">–</div></div>
+    <div class="stat" style="--accent: var(--amber)"><div class="label">Challenged</div><div class="value" id="s-challenged">–</div></div>
+    <div class="stat" style="--accent: var(--fuchsia)"><div class="label">Trapped</div><div class="value" id="s-trapped">–</div></div>
+    <div class="stat" style="--accent: var(--purple)"><div class="label">Captured bots</div><div class="value" id="s-captured">–</div></div>
+  </section>
+
+  <div class="main">
+    <section class="card">
+      <div class="card-head">
+        <h2>Connections</h2>
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" aria-selected="true" data-tab="graph">Graph</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="captured">Captured</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="feed">Live feed</button>
+          <button class="tab" role="tab" aria-selected="false" data-tab="settings">Settings</button>
+        </div>
+      </div>
+
+      <div class="panel active" id="panel-graph">
+        <div id="graph-wrap">
+          <svg id="graph" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Connection graph">
+            <defs>
+              <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="5" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <g id="links"></g>
+            <g id="nodes"></g>
+          </svg>
+          <div id="empty"><div>No traffic yet.<br><span class="muted">Send a request through the proxy to see it here.</span></div></div>
+        </div>
+        <div class="card-foot">
+          <span class="legend"><span class="sw" style="background:#e8e8f0"></span>Origin</span>
+          <span class="legend"><span class="sw" style="background:#5eead4"></span>Passing</span>
+          <span class="legend"><span class="sw" style="background:#fbbf24"></span>Challenged</span>
+          <span class="legend"><span class="sw" style="background:#a78bfa;box-shadow:0 0 8px #8b5cf6"></span>Captured</span>
+          <span class="legend"><span class="sw" style="background:#d946ef"></span>Maze</span>
+          <span class="legend"><span class="sw line" style="background:#5eead4"></span>proxied</span>
+          <span class="legend"><span class="sw line" style="background:#fbbf24"></span>challenged</span>
+          <span class="legend"><span class="sw line" style="background:#a78bfa"></span>trapped</span>
+        </div>
+      </div>
+
+      <div class="panel" id="panel-captured">
+        <div class="list" id="captured"></div>
+      </div>
+
+      <div class="panel" id="panel-settings">
+        <div class="settings-wrap">
+          <div>
+            <div class="settings-head">
+              <div class="muted">Config file: <span class="mono" id="settings-path">…</span></div>
+              <button class="btn" id="settings-save" type="button">Save changes</button>
+            </div>
+            <div id="settings-msg" class="msg"></div>
+            <form id="settings-form" onsubmit="return false"></form>
+          </div>
+          <aside>
+            <div class="card-head" style="padding:0 0 10px;border:0"><h2>Recent changes</h2></div>
+            <div id="audit"></div>
+          </aside>
+        </div>
+      </div>
+
+      <div class="panel" id="panel-feed">
+        <div class="list" id="feed"></div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="card">
+        <div class="card-head"><h2>Inspector</h2><span class="muted" id="updated"></span></div>
+        <div class="detail" id="detail"></div>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

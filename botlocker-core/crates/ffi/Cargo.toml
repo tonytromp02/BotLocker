@@ -1,0 +1,14 @@
+[package]
+name = "botlocker-ffi"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[lib]
+name = "botlocker_ffi"
+# staticlib is linked into the nginx module. rlib lets the tests below run.
+crate-type = ["staticlib", "rlib"]
+
+[dependencies]
+botlocker-core = { path = "../core" }
+url = "2"

@@ -1,0 +1,90 @@
+# Botlocker in front of your site, using nginx with the botlocker module.
+#
+# Quick start (run from the nginx/ folder):
+#   1. Set ORIGIN_URL in the botlocker service below to your real site. It defaults to the
+#      bundled project page (http://website:80). Your own site can be http://host.docker.internal:3000
+#      (on this machine) or another compose service (http://app:8000). Then copy the settings file:
+#        cp .env.example .env
+#   2. Create the signing secret (keep it private, never commit it):
+#        mkdir -p secrets && openssl rand -hex 32 > secrets/botlocker_secret
+#   3. Start it:
+#        docker compose -f docker-compose-nginx.yaml up -d --build
+#   4. Visit http://localhost:8080 . Your site should look the same.
+#
+# Optional dashboard: set BOTLOCKER_DASHBOARD=on and BOTLOCKER_ADMIN_APIKEY in .env, then
+# start the stack again. It runs in this same container, at http://localhost:9090.
+#
+# See nginx/README.md for the full guide.
+
+name: botlocker-nginx
+
+services:
+  botlocker:
+    build:
+      # The build needs the whole repository, so the context is the repo root.
+      context: ..
+      dockerfile: nginx/Dockerfile
+    image: botlocker-nginx:latest
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+      # The dashboard. Published to loopback only, so it is not reachable from the network.
+      # It only answers when BOTLOCKER_DASHBOARD=on.
+      - "127.0.0.1:9090:9090"
+    environment:
+      # Required. Where your real site runs, as seen from inside the container.
+      # Set it to your site. The default is the bundled project page (the website service below).
+      ORIGIN_URL: http://website:80
+      # Host name nginx answers to. "_" accepts any host.
+      SERVER_NAME: ${SERVER_NAME:-_}
+      # Optional. on runs the dashboard in this container. off (default) runs the proxy only.
+      BOTLOCKER_DASHBOARD: ${BOTLOCKER_DASHBOARD:-off}
+      # Required when BOTLOCKER_DASHBOARD=on. Every dashboard API request must send this key.
+      # Empty is fine while the dashboard is off.
+      BOTLOCKER_ADMIN_APIKEY: ${BOTLOCKER_ADMIN_APIKEY:-}
+      # Optional. Writes a JSON decision log for the dashboard. Empty = off (on when the dashboard is on).
+      EVENT_LOG_FILE: ${EVENT_LOG_FILE:-}
+      # Optional. Proxies in front of BotLocker (e.g. NPM, 172.16.0.0/12 for Docker bridges).
+      # Their X-Forwarded-For sets the visitor IP. Empty = the TCP peer is the client.
+      BOTLOCKER_TRUSTED_PROXIES: ${BOTLOCKER_TRUSTED_PROXIES:-}
+    volumes:
+      # Settings folder. Edit botlocker.toml here, or on the dashboard's Settings page.
+      # nginx reloads itself when the file changes.
+      - ./settings:/etc/botlocker/settings
+      # Optional. Put your robots.txt in ./robots/ to serve it at /robots.txt.
+      - ./robots:/etc/botlocker/robots:ro
+    secrets:
+      - botlocker_secret
+    # Lets the container reach a site running on your host machine on Linux.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:80/.bl/challenge"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    depends_on: [website]
+
+  # The site to protect: the project page in ../webpage. It is not published to the host, so
+  # visitors reach it only through botlocker. To use your own site instead, change ORIGIN_URL in
+  # the botlocker service and remove this service (or keep it unused).
+  website:
+    build: ../webpage
+    image: botlocker-site:latest
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/cache/nginx
+      - /var/run
+
+  # Example: your own site, as a service. Replace the image and port with yours,
+  # then set ORIGIN_URL: http://app:8000 in the botlocker service.
+  # app:
+  #   image: your-site:latest
+  #   expose: ["8000"]
+
+secrets:
+  botlocker_secret:
+    file: ./secrets/botlocker_secret

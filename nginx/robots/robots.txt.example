@@ -1,0 +1,8 @@
+# Copy this file to robots/robots.txt and edit it. The proxy serves that file at /robots.txt.
+# Keep the Disallow line for the maze so compliant crawlers never enter it.
+
+User-agent: *
+Disallow: /maze/
+
+# Your own rules go below, e.g.:
+# Disallow: /admin/

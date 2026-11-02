@@ -1,0 +1,65 @@
+# Rendered by docker-entrypoint.sh. Edit this file to change the proxy setup,
+# then rebuild the image (or mount your own nginx.conf over the rendered one).
+
+user nginx;
+worker_processes auto;
+pid /run/nginx.pid;
+error_log /dev/stderr info;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+    server_tokens off;
+    sendfile      on;
+    keepalive_timeout 65;
+    client_max_body_size 10m;
+
+    # Client IP from X-Forwarded-For, only for trusted proxies (BOTLOCKER_TRUSTED_PROXIES).
+    ${TRUSTED_PROXY_DIRECTIVES}
+
+    # $botlocker_action is proxied | challenged | trapped
+    log_format bl_fmt '$remote_addr [$time_local] "$request" $status '
+                      'action=$botlocker_action ua="$http_user_agent"';
+    access_log /dev/stdout bl_fmt;
+
+    # JSON copy of each decision for the optional dashboard. Set by the entrypoint.
+    log_format botlocker_json escape=json
+        '{"ts":"$time_iso8601","ip":"$remote_addr","method":"$request_method",'
+        '"path":"$uri","status":$status,"action":"$botlocker_action",'
+        '"reason":"$botlocker_reason","evidence":"$botlocker_evidence",'
+        '"ua":"$http_user_agent"}';
+    ${EVENT_LOG_DIRECTIVE}
+
+    botlocker_config      ${CONFIG_FILE};
+    botlocker_secret_file ${SECRET_FILE};
+
+    server {
+        listen ${LISTEN_PORT};
+        server_name ${SERVER_NAME};
+
+        # robots.txt from the mounted ./robots folder, if present. Otherwise the origin's is proxied.
+        ${ROBOTS_LOCATION}
+
+        location / {
+            botlocker on;
+
+            proxy_pass ${ORIGIN_URL};
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            # sub_filter can only rewrite uncompressed HTML.
+            proxy_set_header Accept-Encoding "";
+
+            # Hidden link to the maze. Only visitors who follow every link reach it.
+            sub_filter_once on;
+            sub_filter '</body>' '<a href="$botlocker_honeypot" rel="nofollow" tabindex="-1" aria-hidden="true" style="position:absolute;left:-10000px">&#8203;</a></body>';
+        }
+    }
+}
